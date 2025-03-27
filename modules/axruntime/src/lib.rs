@@ -130,6 +130,8 @@ pub extern "C" fn rust_main(cpu_id: usize, dtb: usize) -> ! {
     info!("Logging is enabled.");
     info!("Primary CPU {} started, dtb = {:#x}.", cpu_id, dtb);
 
+    axhal::console::test(dtb);
+
     info!("Found physcial memory regions:");
     for r in axhal::mem::memory_regions() {
         info!(

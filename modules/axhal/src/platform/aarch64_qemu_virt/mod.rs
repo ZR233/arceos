@@ -10,6 +10,7 @@ pub mod irq {
 
 pub mod console {
     pub use crate::platform::aarch64_common::pl011::*;
+    pub use crate::platform::aarch64_common::debug::*;
 }
 
 pub mod time {
