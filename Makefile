@@ -34,6 +34,7 @@
 # General options
 ARCH ?= x86_64
 PLATFORM ?=
+DTB ?=
 SMP ?= 1
 MODE ?= release
 LOG ?= warn

@@ -21,6 +21,7 @@ const BUILTIN_PLATFORM_FAMILIES: &[&str] = &[
     "aarch64-rk3588j",
     "riscv64-qemu-virt",
     "x86-pc",
+    "plat_dyn",
 ];
 
 fn make_cfg_values(str_list: &[&str]) -> String {
@@ -33,16 +34,25 @@ fn make_cfg_values(str_list: &[&str]) -> String {
 
 fn main() {
     let arch = std::env::var("CARGO_CFG_TARGET_ARCH").unwrap();
-    let platform = axconfig::PLATFORM;
-    if platform != "dummy" {
+    let is_dyn = std::env::var("CARGO_FEATURE_PLAT_DYN").is_ok();
+
+    let family;
+    let platform;
+
+    if is_dyn {
+        family = "plat_dyn";
+        platform = "plat_dyn";
+    } else {
+        family = axconfig::plat::FAMILY;
+        platform = axconfig::PLATFORM;
+    };
+
+    if platform != "dummy" && !is_dyn {
         gen_linker_script(&arch, platform).unwrap();
     }
 
     println!("cargo:rustc-cfg=platform=\"{}\"", platform);
-    println!(
-        "cargo:rustc-cfg=platform_family=\"{}\"",
-        axconfig::plat::FAMILY
-    );
+    println!("cargo:rustc-cfg=platform_family=\"{}\"", family);
     println!(
         "cargo::rustc-check-cfg=cfg(platform, values({}))",
         make_cfg_values(BUILTIN_PLATFORMS)

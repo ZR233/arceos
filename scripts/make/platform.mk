@@ -14,6 +14,10 @@ ifeq ($(PLATFORM),)
     $(error "ARCH" must be one of "x86_64", "riscv64", "aarch64" or "loongarch64")
   endif
   PLAT_CONFIG := configs/platforms/$(PLAT_NAME).toml
+
+  ifneq ($(DTB),)
+    include scripts/make/plat_dyn.mk
+  endif
 else
   # `PLATFORM` is specified, override the `ARCH` variables
   builtin_platforms := $(patsubst configs/platforms/%.toml,%,$(wildcard configs/platforms/*))
