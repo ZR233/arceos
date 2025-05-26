@@ -12,7 +12,7 @@ build_args-release := --release
 
 build_args := \
   -Z unstable-options \
-  --target $(TARGET) \
+  --target aarch64-dyn-none-softfloat.json \
   --target-dir $(TARGET_DIR) \
   $(build_args-$(MODE)) \
   $(verbose)
