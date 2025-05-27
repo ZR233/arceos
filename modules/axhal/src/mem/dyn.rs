@@ -83,6 +83,7 @@ pub(crate) unsafe fn init_map_liner(f: AddrMapFunc) {
     }
 }
 
+/// maps a mmio physical address to a virtual address.
 pub fn iomap(addr: PhysAddr, size: usize) -> Result<NonNull<u8>, axerrno::AxError> {
     let end = (addr.as_usize() + size).align_up_4k();
     let start = addr.align_down_4k();

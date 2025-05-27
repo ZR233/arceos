@@ -17,6 +17,7 @@ use axerrno::AxError;
 pub use memory_addr::{MemoryAddr, PAGE_SIZE_4K, PhysAddr, VirtAddr};
 use page_table_entry::MappingFlags;
 
+/// A function to map a region of memory.
 pub type AddrMapFunc = fn(
     start_vaddr: VirtAddr,
     start_paddr: PhysAddr,

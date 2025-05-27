@@ -1,3 +1,4 @@
+/// Starts the given secondary CPU with its all index and secondary index.
 pub fn start_secondary_cpu(cpu_idx: usize, second_cpu_idx: usize) {
     #[cfg(plat_dyn)]
     start_secondary_cpu_dyn(cpu_idx, second_cpu_idx);

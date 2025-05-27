@@ -74,6 +74,9 @@ pub mod misc {
 #[cfg(feature = "smp")]
 pub mod mp;
 
+/// Initializes the platform devices for the primary CPU.
+///
+/// For example, the interrupt controller and the timer.
 #[allow(unused)]
 pub fn platform_init(map_func: Option<AddrMapFunc>) {
     #[cfg(not(plat_dyn))]
