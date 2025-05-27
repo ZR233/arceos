@@ -19,8 +19,8 @@ pub mod time {
     pub use crate::platform::aarch64_common::generic_timer::*;
 }
 
-use crate::mp::CPU_HWID;
-use crate::mp::MAX_HARTS;
+use super::mp::CPU_HWID;
+use super::mp::MAX_HARTS;
 
 unsafe extern "C" {
     fn exception_vector_base();
