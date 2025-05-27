@@ -1,13 +1,15 @@
+extern crate alloc;
+
 use core::{error::Error, ptr::NonNull};
 
 use alloc::{boxed::Box, format};
 use axerrno::AxError;
-use memory_addr::{MemoryAddr, PhysAddr, VirtAddr};
-use page_table_entry::MappingFlags;
-use somehal::mem::{
+use axplat_dyn::mem::{
     percpu_data,
     region::{AccessFlags, MemRegionKind},
 };
+use memory_addr::{MemoryAddr, PhysAddr, VirtAddr};
+use page_table_entry::MappingFlags;
 
 use super::{MemRegion, MemRegionFlags};
 
@@ -23,7 +25,7 @@ pub type MapLinearFunc = fn(
 /// Converts a virtual address to a physical address.
 #[inline]
 pub fn virt_to_phys(vaddr: VirtAddr) -> PhysAddr {
-    somehal::mem::virt_to_phys(vaddr.as_usize().into())
+    axplat_dyn::mem::virt_to_phys(vaddr.as_usize().into())
         .raw()
         .into()
 }
@@ -31,18 +33,18 @@ pub fn virt_to_phys(vaddr: VirtAddr) -> PhysAddr {
 /// Converts a physical address to a virtual address.
 #[inline]
 pub fn phys_to_virt(paddr: PhysAddr) -> VirtAddr {
-    somehal::mem::phys_to_virt(paddr.as_usize().into())
+    axplat_dyn::mem::phys_to_virt(paddr.as_usize().into())
         .raw()
         .into()
 }
 
 /// Returns an iterator over all physical memory regions.
 pub fn memory_regions() -> impl Iterator<Item = MemRegion> {
-    somehal::mem::memory_regions().map(|reg| reg.into())
+    axplat_dyn::mem::memory_regions().map(|reg| reg.into())
 }
 
-impl From<&somehal::mem::MemRegion> for MemRegion {
-    fn from(value: &somehal::mem::MemRegion) -> Self {
+impl From<&axplat_dyn::mem::MemRegion> for MemRegion {
+    fn from(value: &axplat_dyn::mem::MemRegion) -> Self {
         let mut flags = MemRegionFlags::empty();
         if value.config.access.contains(AccessFlags::Read) {
             flags |= MemRegionFlags::READ;

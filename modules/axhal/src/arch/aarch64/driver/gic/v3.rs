@@ -3,7 +3,7 @@ use core::error::Error;
 extern crate alloc;
 
 use arm_gic_driver::v3::Gic;
-use somehal::{
+use axplat_dyn::{
     driver::{Descriptor, HardwareKind, intc::Box, register::FdtInfo},
     module_driver,
 };

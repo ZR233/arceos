@@ -1,6 +1,6 @@
-pub use somehal::driver;
+pub use axplat_dyn::driver;
 #[allow(unused)]
-pub use somehal::driver::intc::IrqConfig;
+pub use axplat_dyn::driver::intc::IrqConfig;
 
 use crate::mem::{self, MapLinearFunc};
 
@@ -16,7 +16,7 @@ unsafe extern "C" {
     fn rust_main_secondary(cpu_id: usize);
 }
 
-#[somehal::entry]
+#[axplat_dyn::entry]
 fn main(_cpu_id: usize, cpu_idx: usize) -> ! {
     // ArceOS soft cpu_id is cpu index.
     if cpu_idx == 0 {
@@ -33,7 +33,7 @@ fn main(_cpu_id: usize, cpu_idx: usize) -> ! {
 
 pub mod console {
     pub fn write_bytes(bytes: &[u8]) {
-        somehal::console::write_bytes(bytes);
+        axplat_dyn::console::write_bytes(bytes);
     }
 
     pub fn read_bytes(_bytes: &mut [u8]) -> usize {
@@ -43,19 +43,19 @@ pub mod console {
 
 pub mod time {
     pub fn current_ticks() -> u64 {
-        somehal::systick::current_ticks()
+        axplat_dyn::systick::current_ticks()
     }
 
     /// Converts hardware ticks to nanoseconds.
     #[inline]
     pub fn ticks_to_nanos(ticks: u64) -> u64 {
-        somehal::systick::ticks_to_nanos(ticks) as _
+        axplat_dyn::systick::ticks_to_nanos(ticks) as _
     }
 
     /// Converts nanoseconds to hardware ticks.
     #[inline]
     pub fn nanos_to_ticks(nanos: u64) -> u64 {
-        somehal::systick::nanos_to_ticks(nanos as _)
+        axplat_dyn::systick::nanos_to_ticks(nanos as _)
     }
 
     /// Return epoch offset in nanoseconds (wall time offset to monotonic clock start).
@@ -78,13 +78,13 @@ pub mod time {
             0
         };
 
-        somehal::systick::get().set_timeval(interval);
-        somehal::systick::get().set_irq_enable(true);
+        axplat_dyn::systick::get().set_timeval(interval);
+        axplat_dyn::systick::get().set_irq_enable(true);
     }
 }
 pub mod misc {
     pub fn terminate() -> ! {
-        somehal::power::terminate()
+        axplat_dyn::power::terminate()
     }
 }
 
@@ -94,20 +94,20 @@ pub mod misc {
 pub fn platform_init(map_func: MapLinearFunc) {
     unsafe {
         mem::init_map_liner(map_func);
-        somehal::init();
+        axplat_dyn::init();
         #[cfg(feature = "irq")]
         irq::init();
 
-        somehal::driver::probe_all(true).unwrap();
+        axplat_dyn::driver::probe_all(true).unwrap();
     }
 }
 
 /// Initializes the platform devices for secondary CPUs.
 #[cfg(feature = "smp")]
 pub fn platform_init_secondary() {
-    somehal::systick::set_enable(true);
-    somehal::systick::get().set_irq_enable(true);
-    somehal::systick::get().set_timeval(0);
+    axplat_dyn::systick::set_enable(true);
+    axplat_dyn::systick::get().set_irq_enable(true);
+    axplat_dyn::systick::get().set_timeval(0);
 
     #[cfg(feature = "irq")]
     unsafe {

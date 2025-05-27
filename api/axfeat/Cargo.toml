@@ -66,8 +66,6 @@ driver-rk3568-emmc = ["axdriver?/rk3568-emmc"]
 #Hypervisor support 
 hv = ["axhal/hv"]
 
-plat-dyn = ["axruntime/plat-dyn", "paging"]
-
 # Logging
 log-level-off = ["axlog/log-level-off"]
 log-level-error = ["axlog/log-level-error"]
