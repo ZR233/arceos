@@ -3,7 +3,6 @@ extern crate alloc;
 use core::{error::Error, ptr::NonNull};
 
 use alloc::{boxed::Box, format};
-use axerrno::AxError;
 use axplat_dyn::mem::{
     percpu_data,
     region::{AccessFlags, MemRegionKind},
@@ -11,16 +10,9 @@ use axplat_dyn::mem::{
 use memory_addr::{MemoryAddr, PhysAddr, VirtAddr};
 use page_table_entry::MappingFlags;
 
-use super::{MemRegion, MemRegionFlags};
+use super::{AddrMapFunc, MemRegion, MemRegionFlags};
 
-static mut MAP_FUNC: MapLinearFunc = |_start_vaddr, _start_paddr, _size, _flags| Ok(());
-
-pub type MapLinearFunc = fn(
-    start_vaddr: VirtAddr,
-    start_paddr: PhysAddr,
-    size: usize,
-    flags: MappingFlags,
-) -> Result<(), AxError>;
+static mut MAP_FUNC: AddrMapFunc = |_start_vaddr, _start_paddr, _size, _flags| Ok(());
 
 /// Converts a virtual address to a physical address.
 #[inline]
@@ -85,13 +77,13 @@ impl From<&axplat_dyn::mem::MemRegion> for MemRegion {
     }
 }
 
-pub(crate) unsafe fn init_map_liner(f: MapLinearFunc) {
+pub(crate) unsafe fn init_map_liner(f: AddrMapFunc) {
     unsafe {
         MAP_FUNC = f;
     }
 }
 
-pub fn iomap(addr: PhysAddr, size: usize) -> Result<NonNull<u8>, Box<dyn Error>> {
+pub fn iomap(addr: PhysAddr, size: usize) -> Result<NonNull<u8>, axerrno::AxError> {
     let end = (addr.as_usize() + size).align_up_4k();
     let start = addr.align_down_4k();
     let size = end - start.as_usize();
@@ -104,8 +96,7 @@ pub fn iomap(addr: PhysAddr, size: usize) -> Result<NonNull<u8>, Box<dyn Error>>
             addr,
             size,
             MappingFlags::READ | MappingFlags::WRITE | MappingFlags::DEVICE,
-        )
-        .map_err(|e| format!("Failed to map memory: {}", e))?;
+        )?;
     }
     Ok(NonNull::new(start_virt.as_mut_ptr()).unwrap())
 }

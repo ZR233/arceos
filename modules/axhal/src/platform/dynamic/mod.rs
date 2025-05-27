@@ -2,13 +2,10 @@ pub use axplat_dyn::driver;
 #[allow(unused)]
 pub use axplat_dyn::driver::intc::IrqConfig;
 
-use crate::mem::{self, MapLinearFunc};
+use crate::mem::{self, AddrMapFunc};
 
 #[cfg(feature = "irq")]
 pub(crate) mod irq;
-
-#[cfg(feature = "smp")]
-pub(crate) mod mp;
 
 unsafe extern "C" {
     fn rust_main(cpu_id: usize);
@@ -91,7 +88,7 @@ pub mod misc {
 /// Initializes the platform devices for the primary CPU.
 ///
 /// For example, the interrupt controller and the timer.
-pub fn platform_init(map_func: MapLinearFunc) {
+pub(crate) fn platform_init(map_func: AddrMapFunc) {
     unsafe {
         mem::init_map_liner(map_func);
         axplat_dyn::init();

@@ -61,6 +61,11 @@ pub fn busy_wait_until(deadline: TimeValue) {
 pub fn irq_config() -> axplat_dyn::irq::IrqConfig {
     axplat_dyn::systick::get().irq()
 }
+#[cfg(not(plat_dyn))]
+#[cfg(feature = "irq")]
+pub fn irq_config() -> usize {
+    TIMER_IRQ_NUM
+}
 
 #[cfg(plat_dyn)]
 #[cfg(feature = "irq")]

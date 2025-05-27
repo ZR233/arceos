@@ -155,13 +155,12 @@ pub extern "C" fn rust_main(cpu_id: usize) -> ! {
 
     info!("Initialize platform devices...");
 
-    axhal::platform_init(|virt, phys, size, flags| {
-        #[cfg(feature = "paging")]
-        axmm::kernel_aspace()
-            .lock()
-            .map_linear(virt, phys, size, flags)?;
-        Ok(())
-    });
+    #[cfg(not(feature = "paging"))]
+    let map_liner_fn = None;
+    #[cfg(feature = "paging")]
+    let map_liner_fn: Option<axhal::mem::AddrMapFunc> = Some(map_liner);
+
+    axhal::platform_init(map_liner_fn);
 
     #[cfg(feature = "multitask")]
     axtask::init_scheduler();
@@ -216,6 +215,18 @@ pub extern "C" fn rust_main(cpu_id: usize) -> ! {
     }
 }
 
+#[cfg(feature = "paging")]
+fn map_liner(
+    virt: axhal::mem::VirtAddr,
+    phys: axhal::mem::PhysAddr,
+    size: usize,
+    flags: axhal::paging::MappingFlags,
+) -> Result<(), axhal::AxError> {
+    axmm::kernel_aspace()
+        .lock()
+        .map_linear(virt, phys, size, flags)
+}
+
 #[cfg(feature = "alloc")]
 fn init_allocator() {
     use axhal::mem::{MemRegionFlags, memory_regions, phys_to_virt};
@@ -253,7 +264,7 @@ fn init_interrupt() {
     static NEXT_DEADLINE: u64 = 0;
 
     fn update_timer() {
-        let periodic_interval_nanos = axhal::time::NANOS_PER_SEC as u64;
+        let periodic_interval_nanos = axhal::time::NANOS_PER_SEC;
 
         let now_ns = axhal::time::monotonic_time_nanos();
         // Safety: we have disabled preemption in IRQ handler.
