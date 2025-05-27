@@ -23,6 +23,8 @@ const BUILTIN_PLATFORM_FAMILIES: &[&str] = &[
     "x86-pc",
 ];
 
+const DYN_PLATFORMS: &[&str] = &["aarch64-dyn"];
+
 fn make_cfg_values(str_list: &[&str]) -> String {
     str_list
         .iter()
@@ -61,6 +63,8 @@ fn main() {
 
 fn gen_linker_script(arch: &str, platform: &str) -> Result<()> {
     let fname = format!("linker_{}.lds", platform);
+    let is_dyn = DYN_PLATFORMS.contains(&platform);
+
     let output_arch = if arch == "x86_64" {
         "i386:x86-64"
     } else if arch.contains("riscv") {
@@ -69,7 +73,7 @@ fn gen_linker_script(arch: &str, platform: &str) -> Result<()> {
         arch
     };
 
-    let ld_template_name = if std::env::var("CARGO_FEATURE_PLAT_DYN").is_ok() {
+    let ld_template_name = if is_dyn {
         "linker.dyn.lds.S"
     } else {
         "linker.lds.S"
