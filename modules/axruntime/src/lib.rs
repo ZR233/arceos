@@ -156,9 +156,11 @@ pub extern "C" fn rust_main(cpu_id: usize) -> ! {
     info!("Initialize platform devices...");
 
     axhal::platform_init(|virt, phys, size, flags| {
+        #[cfg(feature = "paging")]
         axmm::kernel_aspace()
             .lock()
-            .map_linear(virt, phys, size, flags)
+            .map_linear(virt, phys, size, flags)?;
+        Ok(())
     });
 
     #[cfg(feature = "multitask")]

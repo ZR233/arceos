@@ -24,9 +24,11 @@ else
     _arch := $(word 1,$(subst -, ,$(PLATFORM)))
     PLAT_NAME := $(PLATFORM)
     PLAT_CONFIG := configs/platforms/$(PLAT_NAME).toml
-    ifneq ($(filter $(PLATFORM),$(builtin_platforms)),)
+    ifneq ($(filter $(PLATFORM),$(PLATFORM_DYN_LIST)),)
       $(info Using $(_arch) dyn platform)
       PLATFORM_IS_DYN := 1
+      override FEATURES := $(shell echo $(FEATURES) | tr ',' ' ')
+      override FEATURES += paging
     endif
   else ifneq ($(wildcard $(PLATFORM)),)
     # custom platform, read the "arch" and "plat-name" fields from the toml file

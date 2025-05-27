@@ -81,10 +81,10 @@ else
   APP_TYPE := c
 endif
 
-# Feature parsing
-include scripts/make/features.mk
 # Platform resolving
 include scripts/make/platform.mk
+# Feature parsing
+include scripts/make/features.mk
 
 # Target
 ifeq ($(ARCH), x86_64)
@@ -106,7 +106,6 @@ endif
 ifeq ($(PLATFORM_IS_DYN), 1)
   _parts := $(subst -, ,$(TARGET))
   TARGET = $(word 1,$(_parts))-dyn-arceos-$(word 4,$(_parts))
-  $(info target: $(TARGET))
 endif
 
 export AX_ARCH=$(ARCH)
