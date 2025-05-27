@@ -2,7 +2,6 @@
 
 #![no_std]
 
-
 extern crate alloc;
 
 #[cfg(target_arch = "aarch64")]
