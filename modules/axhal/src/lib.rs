@@ -103,7 +103,9 @@ pub mod context {
 }
 
 pub use axcpu::asm;
-pub use axplat::init::{init_early, init_early_secondary, init_later, init_later_secondary};
+pub use axplat::init::{init_early, init_later};
+#[cfg(feature = "smp")]
+pub use axplat::init::{init_percpu, init_percpu_secondary};
 
 /// Initializes CPU-local data structures for the primary core.
 ///
