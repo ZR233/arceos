@@ -16,7 +16,7 @@ smp = ["axhal/smp", "axtask?/smp"]
 irq = ["axhal/irq", "axtask?/irq", "dep:percpu"]
 tls = ["axhal/tls", "axtask?/tls"]
 alloc = ["dep:axalloc"]
-paging = ["axhal/paging", "dep:axmm"]
+paging = ["axhal/paging", "dep:axmm", "dep:axklib"]
 ipi = ["dep:axipi"]
 
 multitask = ["axtask/multitask"]
@@ -26,7 +26,7 @@ display = ["dep:axdriver", "dep:axdisplay"]
 input = ["dep:axdriver", "dep:axinput"]
 vsock = ["net", "dep:axdriver"]
 rtc = []
-driver-dyn = ["axdriver/dyn"]
+plat-dyn = ["axdriver/dyn"]
 
 [dependencies]
 axalloc = { workspace = true, optional = true }
@@ -48,3 +48,4 @@ crate_interface.workspace = true
 ctor_bare.workspace = true
 indoc = "2"
 percpu = { workspace = true, optional = true }
+axklib = { workspace = true, optional = true }

@@ -28,6 +28,9 @@ mod lang_items;
 #[cfg(feature = "smp")]
 mod mp;
 
+#[cfg(feature = "paging")]
+mod klib;
+
 #[cfg(feature = "smp")]
 pub use self::mp::rust_main_secondary;
 
@@ -105,9 +108,13 @@ fn is_init_ok() -> bool {
 /// secondary cores call [`rust_main_secondary`].
 #[cfg_attr(not(test), axplat::main)]
 pub fn rust_main(cpu_id: usize, arg: usize) -> ! {
-    unsafe { axhal::mem::clear_bss() };
+    #[cfg(not(feature = "plat-dyn"))]
+    unsafe {
+        axhal::mem::clear_bss()
+    };
     axhal::percpu::init_primary(cpu_id);
     axhal::init_early(cpu_id, arg);
+    let log_level = option_env!("AX_LOG").unwrap_or("info");
 
     ax_println!("{}", LOGO);
     ax_println!(
@@ -124,7 +131,7 @@ pub fn rust_main(cpu_id: usize, arg: usize) -> ! {
         axconfig::PLATFORM,
         option_env!("AX_TARGET").unwrap_or(""),
         option_env!("AX_MODE").unwrap_or(""),
-        option_env!("AX_LOG").unwrap_or(""),
+        log_level,
         axbacktrace::is_enabled(),
         axhal::cpu_num()
     );
@@ -135,7 +142,7 @@ pub fn rust_main(cpu_id: usize, arg: usize) -> ! {
     );
 
     axlog::init();
-    axlog::set_max_level(option_env!("AX_LOG").unwrap_or("")); // no effect if set `log-level-*` features
+    axlog::set_max_level(log_level); // no effect if set `log-level-*` features
     info!("Logging is enabled.");
     info!("Primary CPU {cpu_id} started, arg = {arg:#x}.");
 
@@ -179,8 +186,8 @@ pub fn rust_main(cpu_id: usize, arg: usize) -> ! {
     #[cfg(feature = "paging")]
     axmm::init_memory_management();
 
-    #[cfg(feature = "driver-dyn")]
-    axdriver::setup(arg);
+    // #[cfg(feature = "plat-dyn")]
+    // axdriver::setup(arg);
 
     info!("Initialize platform devices...");
     axhal::init_later(cpu_id, arg);

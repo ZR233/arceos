@@ -50,6 +50,7 @@ TARGET_DIR ?= $(PWD)/target
 EXTRA_CONFIG ?=
 OUT_CONFIG ?= $(PWD)/.axconfig.toml
 UIMAGE ?= n
+PLAT_DYN ?= n
 
 # App options
 A ?= examples/helloworld

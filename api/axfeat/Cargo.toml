@@ -28,6 +28,7 @@ ipi = ["irq", "dep:axipi", "axhal/ipi", "axruntime/ipi"]
 # Custom or default platforms
 myplat = ["axhal/myplat"]
 defplat = ["axhal/defplat"]
+plat-dyn = ["axhal/plat-dyn", "paging", "axruntime/plat-dyn", "axdriver/dyn"]
 
 # Memory
 alloc = ["axalloc", "axruntime/alloc"]
@@ -99,8 +100,6 @@ driver-ixgbe = ["axdriver?/ixgbe"]
 driver-fxmac = ["axdriver?/fxmac"]                          # fxmac ethernet driver for PhytiumPi
 driver-bcm2835-sdhci = ["axdriver?/bcm2835-sdhci"]
 driver-ahci = ["axdriver?/ahci"]
-
-driver-dyn = ["paging", "axruntime/driver-dyn", "axdriver/dyn"]
 
 # Backtrace
 dwarf = ["alloc", "axbacktrace/dwarf"]
